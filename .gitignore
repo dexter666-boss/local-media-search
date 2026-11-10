@@ -1,0 +1,20 @@
+# Local environments and private runtime data
+.venv*/
+.cache/
+__pycache__/
+*.pyc
+.env
+.env.*
+models/
+*.log
+*.npz
+*.npy
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wav
+*.mp3
+*.flac
+# Deliberately public fictional functional fixture
+!examples/media/meeting.mp4

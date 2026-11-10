@@ -1,0 +1,10 @@
+open-clip-torch>=2.24,<4
+opencv-python>=4.8,<5
+Pillow>=10,<13
+transformers>=4.45,<5
+sentencepiece>=0.2,<0.3
+rapidocr-onnxruntime==1.4.4
+faster-whisper>=1.1,<2
+av>=11,<17
+opencc-python-reimplemented==0.1.7
+cn2an>=0.5.23,<0.6
