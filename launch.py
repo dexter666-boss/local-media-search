@@ -1,4 +1,5 @@
 """Start the local UI, or reuse this application's existing local server."""
+import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 import webbrowser
@@ -19,7 +20,7 @@ def main():
     except URLError:
         app.main(open_browser=True)
     else:
-        print('本地工具已运行，打开现有页面。', flush=True)
+        print('Local Media Search is already running. Opening the browser.', flush=True)
         webbrowser.open(URL)
 
 
@@ -27,5 +28,5 @@ if __name__ == '__main__':
     try:
         main()
     except (OSError, RuntimeError) as error:
-        print(f'启动失败：{error}', flush=True)
+        print(f'Launch failed: {error}', file=sys.stderr, flush=True)
         raise SystemExit(1)

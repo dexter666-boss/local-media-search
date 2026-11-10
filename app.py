@@ -301,7 +301,7 @@ def main(open_browser=False):
         server = ThreadingHTTPServer(('127.0.0.1', 8765), Handler)
         server.session = Session()
         server.uploads = uploads
-        print('打开 http://127.0.0.1:8765 ，按 Ctrl+C 停止。', flush=True)
+        print('Open http://127.0.0.1:8765. Press Ctrl+C to stop.', flush=True)
         if open_browser:
             import webbrowser
             webbrowser.open('http://127.0.0.1:8765/')
