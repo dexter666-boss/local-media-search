@@ -10,7 +10,7 @@
 | Words in a screenshot | 找图片文字 / Screenshot text | Recognized text and highlighted lines |
 | Something said in a recording | 找讲话 / Speech | Transcript, original file and playable estimated ranges |
 
-Search a whole folder recursively without picking a file first. Search visual moments inside a single long video too. Preview originals, reveal files in Explorer, and reuse cached indexes. The current UI is in Chinese; visual queries support Chinese and English.
+Search a whole folder recursively without picking a file first. Search visual moments inside a single long video too. Preview originals, reveal files in Explorer, and reuse cached indexes. Choose **简体中文** or **English** in the top-right corner. The app remembers your choice. Visual queries support Chinese and English.
 
 ## Real application walkthrough
 

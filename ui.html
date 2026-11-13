@@ -7,15 +7,75 @@
 </style>
 <style>.modes{display:flex;gap:10px;margin:24px 0}.modes button{background:#273023;color:#cbd6c3}.modes button[aria-pressed=true]{background:#d5ef96;color:#16200c}#photo{width:100%;max-height:370px;object-fit:contain;background:#080b08;border-radius:8px}#folder-box{margin:18px 0}.folder-actions{display:flex;gap:10px;margin-top:12px}#scan-errors{white-space:pre-wrap;overflow-wrap:anywhere;color:#efbb91}.result strong{overflow-wrap:anywhere}.result span{min-width:0}</style>
 <style>select{width:100%;padding:12px;border:1px solid #45523e;border-radius:8px;background:#101510;color:#eff7e8;font:inherit}</style>
-<header><span class="brand">镜头索引 <span style="color:#d5ef96">↗</span></span><span class="tag">本地运行 · v0.1 测试版</span></header>
-<main><h1>用一句话，找到想要的画面。</h1><p>从长视频中定位片段，或从文件夹里寻找照片和视频。使用中文或英文描述画面中的场景、人物和物体。图片文字可按关键词或原句查找。支持音视频台词原文检索；不识别歌曲名或环境声音；专有名称和复杂事件可能无法准确匹配。</p><div class="modes" role="group" aria-label="搜索范围"><button id="single-mode" aria-pressed="true">长视频找片段</button><button id="library-mode" aria-pressed="false">文件夹找素材</button></div><section id="folder-box" class="panel hidden"><h2>选择素材文件夹</h2><label class="field" for="folder-path">文件夹路径（包含子文件夹）</label><input id="folder-path" type="text" placeholder="例如：E:\Videos\旅行素材"><div class="folder-actions"><button id="browse-folder">浏览文件夹…</button><button id="scan-folder">扫描并建立索引</button></div><p>画面检索统一搜索照片和视频；图片文字检索只读取图片，语音台词检索读取音视频。原文件保留在原位置；索引和 OCR 文字缓存在程序目录，重新处理时复用未变化文件的缓存。</p><p id="scan-errors"></p></section>
-<div class="layout"><section class="panel" id="preview-panel"><h2 id="source-heading">选择长视频</h2><label class="file-button">选择本地视频<input id="file" type="file" accept="video/*" aria-label="选择本地视频"></label><span id="filename" class="filename">尚未选择视频</span><div id="placeholder" class="video-empty">照片或视频将在这里预览<br>支持浏览器可播放的视频格式</div><video id="player" class="hidden" controls playsinline></video><p class="note">所有处理在本机完成。文件夹素材直接从原位置读取；单视频模式在程序目录内建立临时副本。模型初次索引需要等待。</p></section>
-<section class="panel"><h2>按内容搜索</h2><form id="search"><label class="field" for="search-target">你想找什么？</label><select id="search-target" data-object-threshold="0.50"><option value="auto">找画面（推荐）</option><option value="text" disabled>找图片文字</option><option value="speech" disabled>找讲话</option></select><label class="field" for="query">搜索描述</label><input id="query" type="text" placeholder="例如：雪地里的孩子 / a child on snow" maxlength="2000" required><div class="controls"><button id="submit" disabled>搜索素材 ↗</button></div></form><p id="status" role="status" aria-live="polite">先选择视频，索引完成后即可搜索。</p><div id="task-progress" class="hidden" aria-live="polite"><progress id="task-bar" aria-label="按文件统计的处理进度"></progress><p id="task-detail"></p></div><div class="result-head"><h2>候选素材</h2><span id="count">等待搜索</span></div><div id="results"><div class="empty">搜索后会显示片段缩略图。<br>点击结果，即可定位播放。</div></div><p class="note">图片文字和讲话按识别原文查找，可能有错字。画面结果需要预览核对，分数不是准确率。时间位置为估计值。</p></section></div></main>
+<style>header{gap:12px;flex-wrap:wrap}.language-choice{display:flex;align-items:center;gap:8px;font-size:13px}.language-choice select{width:auto;padding:6px 8px}</style>
+<header><span class="brand"><span data-en="Local Media Search">镜头索引</span> <span style="color:#d5ef96">↗</span></span><span class="tag" data-en="Local · v0.1 beta">本地运行 · v0.1 测试版</span><label class="language-choice"><span data-en="Language">界面语言</span><select id="language"><option value="zh-CN" lang="zh-CN">简体中文</option><option value="en" lang="en">English</option></select></label></header>
+<main><h1 data-en="Find the footage you remember.">用一句话，找到想要的画面。</h1><p data-en="Find moments in a long video or search a folder of photos and videos. Describe scenes, people, and objects in Chinese or English, or search for exact words in screenshots and recordings. Results for specific names and complex events may vary.">从长视频中定位片段，或从文件夹里寻找照片和视频。使用中文或英文描述画面中的场景、人物和物体。图片文字可按关键词或原句查找。支持音视频台词原文检索；不识别歌曲名或环境声音；专有名称和复杂事件可能无法准确匹配。</p><div class="modes" role="group" aria-label="搜索范围" data-en-aria-label="Search scope"><button id="single-mode" aria-pressed="true" data-en="Search a video">长视频找片段</button><button id="library-mode" aria-pressed="false" data-en="Search a folder">文件夹找素材</button></div><section id="folder-box" class="panel hidden"><h2 data-en="Choose a media folder">选择素材文件夹</h2><label class="field" for="folder-path" data-en="Folder path (includes subfolders)">文件夹路径（包含子文件夹）</label><input id="folder-path" type="text" placeholder="例如：E:\Videos\旅行素材" data-en-placeholder="Example: E:\Videos\Travel"><div class="folder-actions"><button id="browse-folder" data-en="Browse…">浏览文件夹…</button><button id="scan-folder" data-en="Scan and index">扫描并建立索引</button></div><p data-en="Visual search uses photos and videos. Text search uses images. Speech search uses audio and video. The app reads originals in place and reuses cached results for unchanged files.">画面检索统一搜索照片和视频；图片文字检索只读取图片，语音台词检索读取音视频。原文件保留在原位置；索引和 OCR 文字缓存在程序目录，重新处理时复用未变化文件的缓存。</p><p id="scan-errors"></p></section>
+<div class="layout"><section class="panel" id="preview-panel"><h2 id="source-heading" data-en="Choose a video">选择长视频</h2><label class="file-button"><span data-en="Choose local video">选择本地视频</span><input id="file" type="file" accept="video/*" aria-label="选择本地视频" data-en-aria-label="Choose local video"></label><span id="filename" class="filename" data-en="No video selected">尚未选择视频</span><div id="placeholder" class="video-empty" data-en="Preview photos and videos here. Your browser must support the video format.">照片或视频将在这里预览<br>支持浏览器可播放的视频格式</div><video id="player" class="hidden" controls playsinline></video><p class="note" data-en="Processing runs locally. Folder search reads originals in place. Single-video mode makes a temporary copy. First-time indexing may take a while.">所有处理在本机完成。文件夹素材直接从原位置读取；单视频模式在程序目录内建立临时副本。模型初次索引需要等待。</p></section>
+<section class="panel"><h2 data-en="Search by content">按内容搜索</h2><form id="search"><label class="field" for="search-target" data-en="What are you looking for?">你想找什么？</label><select id="search-target" data-object-threshold="0.50"><option value="auto" data-en="Visual search (recommended)">找画面（推荐）</option><option value="text" disabled data-en="Image text">找图片文字</option><option value="speech" disabled data-en="Speech">找讲话</option></select><label class="field" for="query" data-en="Search query">搜索描述</label><input id="query" type="text" placeholder="例如：雪地里的孩子 / a child on snow" data-en-placeholder="Example: a child on snow" maxlength="2000" required><div class="controls"><button id="submit" disabled data-en="Search ↗">搜索素材 ↗</button></div></form><p id="status" role="status" aria-live="polite" data-en="Choose a video and wait for indexing to finish.">先选择视频，索引完成后即可搜索。</p><div id="task-progress" class="hidden" aria-live="polite"><progress id="task-bar" aria-label="按文件统计的处理进度" data-en-aria-label="File processing progress"></progress><p id="task-detail"></p></div><div class="result-head"><h2 data-en="Results">候选素材</h2><span id="count" data-en="Ready to search">等待搜索</span></div><div id="results"><div class="empty" data-en="Search results show thumbnails. Select a result to jump to that moment.">搜索后会显示片段缩略图。<br>点击结果，即可定位播放。</div></div><p class="note" data-en="Text and speech search use recognized words, which may contain errors. Preview visual matches to verify them. Timestamps are estimates.">图片文字和讲话按识别原文查找，可能有错字。画面结果需要预览核对，分数不是准确率。时间位置为估计值。</p></section></div></main>
 <script>
 const $=id=>document.getElementById(id);let objectURL=null,ready=false,stopAt=null,mode='single',libraryReady=false,busy=false;
-const photo=document.createElement('img');photo.id='photo';photo.alt='照片预览';photo.className='hidden';
+
+let language = navigator.language.toLowerCase().startsWith('zh') ? 'zh-CN' : 'en';
+try {
+ const saved = localStorage.getItem('media-search-language');
+ if (saved === 'zh-CN' || saved === 'en') language = saved;
+} catch (error) { /* A blocked preference store does not prevent searching. */ }
+const t = (chinese, english) => language === 'en' ? english : chinese;
+const serverLabels = new Map(Object.entries({
+ '准备处理':'Preparing', '枚举素材文件':'Listing media files', '登记文件':'Registering files',
+ '建立画面索引':'Indexing visuals', '扫描完成':'Scan complete', '识别图片文字':'Recognizing image text',
+ '整理文字结果':'Collecting text results', '转写语音，首次加载可能下载模型':'Transcribing speech. The first run may download the model.',
+ '加载画面模型，首次使用可能需要下载':'Loading the visual model. The first run may download it.',
+ '画面相似度':'Visual similarity', '检测置信度':'Detection confidence', '整句画面相似度':'Full-query visual similarity',
+ '场景相似度':'Scene similarity', '物体检测置信度':'Object detection confidence',
+ '与描述画面相似，未逐项确认全部条件':'Visually similar to the query. Preview to verify the details.',
+ '待核对：条件未全部通过':'Some conditions did not match', '匹配文字行数':'Matched lines',
+ 'OCR 原文包含查询文字':'Recognized text contains the query', '原文匹配':'Exact text match',
+ '转写台词包含查询文字':'Transcript contains the query', '文件夹不存在。':'Folder does not exist.',
+ '请选择或输入素材文件夹。':'Choose or enter a media folder.', '请输入要查找的文字。':'Enter the text to search for.',
+ '请输入台词中的文字或数字。':'Enter words or numbers to search for.',
+ '请先选择视频并等待索引完成。':'Choose a video and wait for indexing to finish.',
+ '当前仅登记了文字素材，请切换检索方式后重新扫描以建立画面索引。':'Scan again in Visual search mode to build a visual index.',
+ '语音搜索请先切换文件夹模式并扫描音视频。':'Choose Search a folder and scan audio or video files first.',
+ '文字搜索请先切换文件夹模式并扫描图片。':'Choose Search a folder and scan images first.'
+}));
+function serverLabel(message) {
+ if (language !== 'en' || !message) return message;
+ if (message.startsWith('条件候选：')) return 'Condition match: ' + message.slice('条件候选：'.length);
+ if (message.startsWith('物体检测候选：')) return 'Detected object: ' + message.slice('物体检测候选：'.length);
+ return serverLabels.get(message) || message;
+}
+function resultNotice(data) {
+ if (language !== 'en') return data.notice;
+ switch (data.search_method) {
+  case 'text': return `Checked ${data.ocr_processed} images (${data.ocr_reused} cached). ${data.skipped_videos} videos skipped, ${data.errors.length} failed.`;
+  case 'speech': return `${data.reused} cached · ${data.no_audio} without audio · ${data.no_speech} without recognized speech · ${data.errors.length} failed. Play results to verify the estimated timestamps.`;
+  case 'conditions': return 'Preview the results to verify each condition.';
+  default: return 'Search complete. Preview the results to verify the matches.';
+ }
+}
+const translated = [...document.querySelectorAll('[data-en], [data-en-aria-label], [data-en-placeholder]')].map(element => ({
+ element, text: element.dataset.en === undefined ? null : element.innerHTML,
+ attributes: ['aria-label','placeholder'].filter(name => element.hasAttribute('data-en-'+name)).map(name => [name,element.getAttribute(name)])
+}));
+function applyLanguage() {
+ document.documentElement.lang = language;
+ $('language').value = language;
+ // Keep the original Chinese title in the served HTML for launcher detection.
+ document.title = t('镜头索引 · 本地素材搜索','Local Media Search');
+ for (const {element,text,attributes} of translated) {
+  if (text !== null) {
+   if (language === 'en') element.textContent = element.dataset.en;
+   else element.innerHTML = text;
+  }
+  for (const [name, original] of attributes) element.setAttribute(name,t(original,element.getAttribute('data-en-'+name)));
+ }
+}
+
+applyLanguage();
+const photo=document.createElement('img');photo.id='photo';photo.alt=t('照片预览',"Photo preview");photo.className='hidden';
 const photoWrap=document.createElement('div');photoWrap.className='photo-wrap';
-const overlay=document.createElementNS('http://www.w3.org/2000/svg','svg');overlay.id='ocr-overlay';overlay.classList.add('hidden');overlay.setAttribute('aria-label','命中文字行的位置');
+const overlay=document.createElementNS('http://www.w3.org/2000/svg','svg');overlay.id='ocr-overlay';overlay.classList.add('hidden');overlay.setAttribute('aria-label',t('命中文字行的位置',"Position of the matched line"));
 photoWrap.append(photo,overlay);$('player').after(photoWrap);
 function showTextBoxes(scene){
  overlay.replaceChildren();overlay.classList.toggle('hidden',!scene.ocr_lines?.length);
@@ -25,64 +85,64 @@ function showTextBoxes(scene){
 } 
 
 const sourceLabel=$('file').parentElement;
-function lock(value){busy=value;for(const id of ['file','browse-folder','scan-folder','single-mode','library-mode','search-target'])$(id).disabled=value;$('submit').disabled=value||!['auto','text','speech'].includes($('search-target').value)||!(mode==='single'?ready:libraryReady)}
-function switchMode(next){showTextBoxes({});mode=next;for(const option of $('search-target').options)option.disabled=mode==='single'&&option.value!=='auto';if(mode==='single'&&$('search-target').value!=='auto'){$('search-target').value='auto';$('search-target').onchange()};$('preview-panel').classList.toggle('hidden',mode==='library');document.querySelector('.layout').classList.toggle('files-only',mode==='library');$('source-heading').textContent=mode==='library'?'素材预览':'选择长视频';stopAt=null;$('player').pause();$('single-mode').setAttribute('aria-pressed',String(mode==='single'));$('library-mode').setAttribute('aria-pressed',String(mode==='library'));$('folder-box').classList.toggle('hidden',mode!=='library');sourceLabel.classList.toggle('hidden',mode!=='single');photo.classList.add('hidden');$('player').classList.add('hidden');$('placeholder').classList.remove('hidden');$('filename').textContent=mode==='single'?($('file').files[0]?.name||'尚未选择视频'):'点击搜索结果可预览对应照片或视频';empty('输入搜索描述，搜索当前范围。');status(mode==='single'?(ready?'视频索引已就绪。':'请选择一个长视频。'):(libraryReady?'文件夹索引已就绪。':'请选择文件夹并扫描。'));lock(false)}
+function lock(value){busy=value;for(const id of ['file','browse-folder','scan-folder','single-mode','library-mode','search-target','language'])$(id).disabled=value;$('submit').disabled=value||!['auto','text','speech'].includes($('search-target').value)||!(mode==='single'?ready:libraryReady)}
+function switchMode(next){showTextBoxes({});mode=next;for(const option of $('search-target').options)option.disabled=mode==='single'&&option.value!=='auto';if(mode==='single'&&$('search-target').value!=='auto'){$('search-target').value='auto';$('search-target').onchange()};$('preview-panel').classList.toggle('hidden',mode==='library');document.querySelector('.layout').classList.toggle('files-only',mode==='library');$('source-heading').textContent=mode==='library'?t('素材预览',"Media preview"):t('选择长视频',"Choose a video");stopAt=null;$('player').pause();$('single-mode').setAttribute('aria-pressed',String(mode==='single'));$('library-mode').setAttribute('aria-pressed',String(mode==='library'));$('folder-box').classList.toggle('hidden',mode!=='library');sourceLabel.classList.toggle('hidden',mode!=='single');photo.classList.add('hidden');$('player').classList.add('hidden');$('placeholder').classList.remove('hidden');$('filename').textContent=mode==='single'?($('file').files[0]?.name||t('尚未选择视频',"No video selected")):t('点击搜索结果可预览对应照片或视频',"Select a result to preview it.");empty(t('输入搜索描述，搜索当前范围。',"Enter a query to search this selection."));status(mode==='single'?(ready?t('视频索引已就绪。',"Video index ready."):t('请选择一个长视频。',"Choose a video.")):(libraryReady?t('文件夹索引已就绪。',"Folder index ready."):t('请选择文件夹并扫描。',"Choose a folder and scan it.")));lock(false)}
 $('single-mode').onclick=()=>switchMode('single');$('library-mode').onclick=()=>switchMode('library');
-$('browse-folder').onclick=async()=>{lock(true);status('请在系统窗口中选择素材文件夹…');try{const result=await request('/api/folder',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});if(result.path)$('folder-path').value=result.path;status('确认路径后，点击扫描并建立索引。')}catch(error){status(error.message,true)}finally{lock(false)}};
-$('scan-folder').onclick=async()=>{lock(true);stopAt=null;empty('正在扫描素材文件夹…');$('scan-errors').textContent='';status($('search-target').value==='speech'?'正在转写和检索语音；首次加载模型较慢，之后复用缓存…':$('search-target').value==='text'?'正在登记素材文件；搜索时识别图片文字。':'正在读取素材并建立索引；首次处理大量视频可能需要较长时间。');try{const data=await request('/api/library',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:$('folder-path').value,target:$('search-target').value})});libraryReady=data.files>0;status(`扫描完成 · ${data.photos} 张照片 · ${data.videos} 个视频 · ${data.audio||0} 个音频`+(['text','speech'].includes(data.indexing)?' · 文件列表已就绪，首次对应搜索会建立转写或 OCR 缓存':` · ${data.reused} 个文件复用缓存`));$('scan-errors').textContent=data.errors.map(error=>`${error.name}：${error.error}`).join('\n');empty(data.files?'素材库已就绪，输入描述开始搜索。':'没有可索引的照片或视频。')}catch(error){status(error.message,true);empty('扫描失败，请检查路径。')}finally{lock(false)}};
-function preview(scene,button){showTextBoxes(scene);$('player').classList.toggle('audio-preview',scene.kind==='audio');$('preview-panel').classList.remove('hidden');document.querySelector('.layout').classList.remove('files-only');$('source-heading').textContent=mode==='library'?'素材预览':'视频预览';for(const b of $('results').children)b.setAttribute('aria-pressed','false');button.setAttribute('aria-pressed','true');stopAt=null;$('player').pause();$('placeholder').classList.add('hidden');$('filename').textContent=scene.name||$('file').files[0]?.name||'';if(scene.kind==='image'){ $('player').classList.add('hidden');photo.src='/media/'+scene.file_id;photo.classList.remove('hidden');return }photo.classList.add('hidden');$('player').classList.remove('hidden');const src=scene.file_id?'/media/'+scene.file_id:objectURL;const play=()=>{stopAt=scene.end;$('player').currentTime=scene.start;$('player').play().catch(()=>status('请点击播放器的播放按钮。'))};if($('player').getAttribute('src')!==src){$('player').onloadedmetadata=()=>{$('player').onloadedmetadata=null;play()};$('player').src=src}else if($('player').readyState>=1){play()}else{$('player').onloadedmetadata=play}}
+$('browse-folder').onclick=async()=>{lock(true);status(t('请在系统窗口中选择素材文件夹…',"Choose a folder in the system dialog…"));try{const result=await request('/api/folder',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});if(result.path)$('folder-path').value=result.path;status(t('确认路径后，点击扫描并建立索引。',"Confirm the path, then select Scan and index."))}catch(error){status(error.message,true)}finally{lock(false)}};
+$('scan-folder').onclick=async()=>{lock(true);stopAt=null;empty(t('正在扫描素材文件夹…',"Scanning the media folder…"));$('scan-errors').textContent='';status($('search-target').value==='speech'?t('正在转写和检索语音；首次加载模型较慢，之后复用缓存…',"Registering audio and video files. Transcription starts when you search."):$('search-target').value==='text'?t('正在登记素材文件；搜索时识别图片文字。',"Registering files. Text recognition starts when you search."):t('正在读取素材并建立索引；首次处理大量视频可能需要较长时间。',"Indexing media. First-time indexing of many videos can take a while."));try{const data=await request('/api/library',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:$('folder-path').value,target:$('search-target').value})});libraryReady=data.files>0;status(t(`扫描完成 · ${data.photos} 张照片 · ${data.videos} 个视频 · ${data.audio||0} 个音频`,`Scan complete · ${data.photos} photos · ${data.videos} videos · ${data.audio||0} audio files`)+(['text','speech'].includes(data.indexing)?t(' · 文件列表已就绪，首次对应搜索会建立转写或 OCR 缓存'," · Files registered. The first search builds the OCR or transcript cache."):t(` · ${data.reused} 个文件复用缓存`,` · ${data.reused} cached files`)));$('scan-errors').textContent=data.errors.map(error=>t(`${error.name}：${error.error}`,`${error.name}: ${error.error}`)).join('\n');empty(data.files?t('素材库已就绪，输入描述开始搜索。',"Media library ready. Enter a query to search."):t('没有可索引的照片或视频。',"No supported media found."))}catch(error){status(error.message,true);empty(t('扫描失败，请检查路径。',"Scan failed. Check the folder path."))}finally{lock(false)}};
+function preview(scene,button){showTextBoxes(scene);$('player').classList.toggle('audio-preview',scene.kind==='audio');$('preview-panel').classList.remove('hidden');document.querySelector('.layout').classList.remove('files-only');$('source-heading').textContent=mode==='library'?t('素材预览',"Media preview"):t('视频预览',"Video preview");for(const b of $('results').children)b.setAttribute('aria-pressed','false');button.setAttribute('aria-pressed','true');stopAt=null;$('player').pause();$('placeholder').classList.add('hidden');$('filename').textContent=scene.name||$('file').files[0]?.name||'';if(scene.kind==='image'){ $('player').classList.add('hidden');photo.src='/media/'+scene.file_id;photo.classList.remove('hidden');return }photo.classList.add('hidden');$('player').classList.remove('hidden');const src=scene.file_id?'/media/'+scene.file_id:objectURL;const play=()=>{stopAt=scene.end;$('player').currentTime=scene.start;$('player').play().catch(()=>status(t('请点击播放器的播放按钮。',"Press Play in the media player.")))};if($('player').getAttribute('src')!==src){$('player').onloadedmetadata=()=>{$('player').onloadedmetadata=null;play()};$('player').src=src}else if($('player').readyState>=1){play()}else{$('player').onloadedmetadata=play}}
 function status(text,error=false){$('status').textContent=text;$('status').classList.toggle('error',error)}
-function empty(text){$('results').replaceChildren();const el=document.createElement('div');el.className='empty';el.textContent=text;$('results').append(el);$('count').textContent='0 项结果'}
+function empty(text){$('results').replaceChildren();const el=document.createElement('div');el.className='empty';el.textContent=text;$('results').append(el);$('count').textContent=t('0 项结果',"0 results")}
 async function request(url,options){
  const watch=['/api/library','/api/library/search'].includes(url);let stopped=false,timer=null;
  async function poll(){
   try{const response=await fetch('/api/progress');if(response.ok){const data=await response.json();if(!stopped&&data.active){
    $('task-progress').classList.remove('hidden');
    if(Number.isFinite(data.total)){$('task-bar').max=Math.max(1,data.total);$('task-bar').value=data.done}else{$('task-bar').removeAttribute('value')}
-   $('task-detail').textContent=data.phase+(Number.isFinite(data.total)?` · 已处理 ${data.done}/${data.total} 个文件 · ${data.reused} 个复用缓存 · ${data.errors} 个失败`:'')+(data.current?' · 当前：'+data.current:'');
+   $('task-detail').textContent=serverLabel(data.phase)+(Number.isFinite(data.total)?t(` · 已处理 ${data.done}/${data.total} 个文件 · ${data.reused} 个复用缓存 · ${data.errors} 个失败`,` · ${data.done}/${data.total} processed · ${data.reused} cached · ${data.errors} failed`):'')+(data.current?t(' · 当前：',' · Current: ')+data.current:'');
   }}}catch(error){/* The main request reports task failures. */}
   if(!stopped)timer=setTimeout(poll,500)
  }
  if(watch){$('task-progress').classList.add('hidden');timer=setTimeout(poll,100)}
- try{const response=await fetch(url,options);const data=await response.json();if(!response.ok)throw Error(data.error||'请求失败');return data}
+ try{const response=await fetch(url,options);const data=await response.json();if(!response.ok)throw Error(serverLabel(data.error)||t('请求失败',"Request failed"));return data}
  finally{stopped=true;clearTimeout(timer);if(watch)$('task-progress').classList.add('hidden')}
 }
 const clock=t=>`${Math.floor(t/60).toString().padStart(2,'0')}:${(t%60).toFixed(1).padStart(4,'0')}`;
-$('file').onchange=async()=>{const file=$('file').files[0];if(!file)return;ready=false;stopAt=null;lock(true);empty('正在建立索引…');$('filename').textContent=file.name;if(objectURL)URL.revokeObjectURL(objectURL);objectURL=URL.createObjectURL(file);photo.classList.add('hidden');$('player').src=objectURL;$('player').classList.remove('hidden');$('placeholder').classList.add('hidden');status('正在建立本地索引，首次加载模型可能需要几十秒…');try{const data=await request('/api/load',{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:file});ready=true;status('索引完成 · '+data.duration.toFixed(1)+' 秒 · '+data.frames+' 个采样画面');empty('索引已就绪，输入搜索描述开始搜索。');$('query').focus()}catch(error){status(error.message,true);empty('未能建立索引，请重新选择视频。')}finally{lock(false)}};
-$('search').onsubmit=async event=>{event.preventDefault();if(busy||!(mode==='single'?ready:libraryReady))return;stopAt=null;lock(true);status($('search-target').value==='speech'?'正在找讲话；首次转写较慢，之后复用缓存…':$('search-target').value==='text'?'正在找图片文字；首次识别较慢，之后复用缓存…':'正在找画面；首次处理可能较慢，之后复用缓存…');empty('正在搜索…');try{const data=await request(mode==='single'?'/api/search':'/api/library/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:$('query').value,target:$('search-target').value,})});if(mode==='library'){renderFiles(data);status(data.notice||'搜索完成。找到文件后，可直接在文件夹中定位。');return}$('count').textContent=data.scenes.length+' 项结果'+(data.total>50?'（共 '+data.total+' 个，显示前 50 个）':'');if(!data.scenes.length){empty('没有找到候选素材，可以换一种描述或缩短关键词。')}else{$('results').replaceChildren();for(const scene of data.scenes){const button=document.createElement('button');button.type='button';button.className='result';button.setAttribute('aria-pressed','false');if(scene.thumbnail){const img=document.createElement('img');img.src=scene.thumbnail;img.alt='候选素材缩略图';button.append(img)}const detail=document.createElement('span'),title=document.createElement('strong'),score=document.createElement('small');title.textContent=(scene.name?scene.name+' · ':'')+(scene.kind==='image'?'照片':clock(scene.start)+' — '+clock(scene.end));score.textContent='相似度 '+scene.score.toFixed(3)+(Number.isFinite(scene.peak_time)?' · 代表画面 '+clock(scene.peak_time):'')+' · 点击'+(scene.kind==='image'?'查看':'播放');detail.append(title,score);button.append(detail);button.onclick=()=>preview(scene,button);$('results').append(button)}}status(data.notice||'搜索完成。点击结果核对素材。')}catch(error){status(error.message,true);empty('搜索失败，请重试。')}finally{lock(false)}};
+$('file').onchange=async()=>{const file=$('file').files[0];if(!file)return;ready=false;stopAt=null;lock(true);empty(t('正在建立索引…',"Indexing…"));$('filename').textContent=file.name;if(objectURL)URL.revokeObjectURL(objectURL);objectURL=URL.createObjectURL(file);photo.classList.add('hidden');$('player').src=objectURL;$('player').classList.remove('hidden');$('placeholder').classList.add('hidden');status(t('正在建立本地索引，首次加载模型可能需要几十秒…',"Building the local index. First-time model loading may take a while…"));try{const data=await request('/api/load',{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:file});ready=true;status(t(`索引完成 · ${data.duration.toFixed(1)} 秒 · ${data.frames} 个采样画面`,`Index ready · ${data.duration.toFixed(1)} sec · ${data.frames} sampled frames`));empty(t('索引已就绪，输入搜索描述开始搜索。',"Index ready. Enter a query to search."));$('query').focus()}catch(error){status(error.message,true);empty(t('未能建立索引，请重新选择视频。',"Indexing failed. Choose the video again."))}finally{lock(false)}};
+$('search').onsubmit=async event=>{event.preventDefault();if(busy||!(mode==='single'?ready:libraryReady))return;stopAt=null;lock(true);status($('search-target').value==='speech'?t('正在找讲话；首次转写较慢，之后复用缓存…',"Searching speech. The first search transcribes recordings and caches results…"):$('search-target').value==='text'?t('正在找图片文字；首次识别较慢，之后复用缓存…',"Searching image text. The first search runs OCR and caches results…"):t('正在找画面；首次处理可能较慢，之后复用缓存…',"Searching visuals. The first search may take a while…"));empty(t('正在搜索…',"Searching…"));try{const data=await request(mode==='single'?'/api/search':'/api/library/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:$('query').value,target:$('search-target').value,})});if(mode==='library'){renderFiles(data);status(resultNotice(data)||t('搜索完成。找到文件后，可直接在文件夹中定位。',"Search complete. You can reveal matching files in their folders."));return}$('count').textContent=data.scenes.length+t(' 项结果'," results")+(data.total>50?'（共 '+data.total+' 个，显示前 50 个）':'');if(!data.scenes.length){empty(t('没有找到候选素材，可以换一种描述或缩短关键词。',"No matches. Try a different or shorter description."))}else{$('results').replaceChildren();for(const scene of data.scenes){const button=document.createElement('button');button.type='button';button.className='result';button.setAttribute('aria-pressed','false');if(scene.thumbnail){const img=document.createElement('img');img.src=scene.thumbnail;img.alt=t('候选素材缩略图',"Result thumbnail");button.append(img)}const detail=document.createElement('span'),title=document.createElement('strong'),score=document.createElement('small');title.textContent=(scene.name?scene.name+' · ':'')+(scene.kind==='image'?t('照片',"Photo"):clock(scene.start)+' — '+clock(scene.end));score.textContent=t('相似度 ',"Similarity ")+scene.score.toFixed(3)+(Number.isFinite(scene.peak_time)?t(' · 代表画面 '," · Representative frame ")+clock(scene.peak_time):'')+t(' · 点击'," · Click to ")+(scene.kind==='image'?t('查看',"view"):t('播放',"play"));detail.append(title,score);button.append(detail);button.onclick=()=>preview(scene,button);$('results').append(button)}}status(resultNotice(data)||t('搜索完成。点击结果核对素材。',"Search complete. Select a result to verify it."))}catch(error){status(error.message,true);empty(t('搜索失败，请重试。',"Search failed. Try again."))}finally{lock(false)}};
 $('player').ontimeupdate=()=>{if(stopAt!==null&&$('player').currentTime>=stopAt){$('player').pause();stopAt=null}};
-$('player').onerror=()=>status('浏览器无法播放此视频编码，仍可尝试检索；建议使用 H.264 MP4。',true);
+$('player').onerror=()=>status(t('浏览器无法播放此视频编码，仍可尝试检索；建议使用 H.264 MP4。',"Your browser cannot play this format. You can still search it. For playback, try H.264 MP4."),true);
 function renderFileCards(files,data,container){
  for(const file of files){
   const card=document.createElement('article');card.className='file-card';
   const heading=document.createElement('h3');heading.textContent=file.name;
-  const info=document.createElement('p');info.textContent=(file.kind==='image'?'照片':file.segment_count+' 段候选片段')+' · '+(file.match_reason||data.match_reason||'画面相似候选')+' · '+(data.score_label||'画面相似度')+' '+(['text','speech'].includes(data.search_method)?file.score:file.score.toFixed(3));
-  const path=document.createElement('p');path.className='file-path';path.textContent='原文件：'+file.path;
-  if(file.thumbnail){const image=document.createElement('img');image.src=file.thumbnail;image.alt='文件预览图';card.append(image)}
+  const info=document.createElement('p');info.textContent=(file.kind==='image'?t('照片',"Photo"):file.segment_count+t(' 段候选片段'," candidate segments"))+' · '+(serverLabel(file.match_reason||data.match_reason)||t('画面相似候选',"Visual match"))+' · '+(serverLabel(data.score_label)||t('画面相似度',"Visual similarity"))+' '+(['text','speech'].includes(data.search_method)?file.score:file.score.toFixed(3));
+  const path=document.createElement('p');path.className='file-path';path.textContent=t('原文件：',"Original file: ")+file.path;
+  if(file.thumbnail){const image=document.createElement('img');image.src=file.thumbnail;image.alt=t('文件预览图',"Media thumbnail");card.append(image)}
   card.append(heading,info,path);
   if(data.search_method==='speech'){const quote=document.createElement('blockquote');quote.textContent=file.text;card.append(quote)}
   if(file.ocr_lines){
    const excerpts=document.createElement('div');excerpts.className='ocr-excerpts';
    for(const line of file.ocr_lines){const quote=document.createElement('blockquote');quote.textContent=line.text;excerpts.append(quote)}
-   const note=document.createElement('p');note.className='note';note.textContent='以上为 OCR 识别原文；预览时框出命中的整行。';excerpts.append(note);card.append(excerpts)
+   const note=document.createElement('p');note.className='note';note.textContent=t('以上为 OCR 识别原文；预览时框出命中的整行。',"Recognized text is shown above. The preview highlights the matched line.");excerpts.append(note);card.append(excerpts)
   }
   if(file.conditions){
-   const evidence=document.createElement('details'),summary=document.createElement('summary');summary.textContent='查看条件筛选依据';evidence.append(summary);
-   for(const condition of file.conditions){const line=document.createElement('p');line.textContent=(condition.passed?'通过':'未通过，待核对')+' · '+condition.term+' · '+condition.label+' '+condition.score.toFixed(3)+'（最低 '+condition.threshold.toFixed(2)+'）';evidence.append(line)}
+   const evidence=document.createElement('details'),summary=document.createElement('summary');summary.textContent=t('查看条件筛选依据',"See matching conditions");evidence.append(summary);
+   for(const condition of file.conditions){const line=document.createElement('p');line.textContent=(condition.passed?t('通过',"Passed"):t('未通过，待核对',"Needs review"))+' · '+condition.term+' · '+serverLabel(condition.label)+' '+condition.score.toFixed(3)+t('（最低 '," (minimum ")+condition.threshold.toFixed(2)+t('）',")");evidence.append(line)}
    card.append(evidence)
   }
 
   const actions=document.createElement('div');actions.className='file-actions';
-  const open=document.createElement('button');open.type='button';open.textContent=file.kind==='image'?'预览照片':file.kind==='audio'?'播放音频':'预览原视频';open.onclick=()=>preview({...file,start:data.search_method==='speech'?file.start:0,end:data.search_method==='speech'?file.end:null},open);
-  const reveal=document.createElement('button');reveal.type='button';reveal.textContent='在文件夹中定位';reveal.onclick=async()=>{try{await request('/api/reveal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({file_id:file.file_id})});status('已在资源管理器中选中原文件。')}catch(error){status(error.message,true)}};
+  const open=document.createElement('button');open.type='button';open.textContent=file.kind==='image'?t('预览照片',"Preview photo"):file.kind==='audio'?t('播放音频',"Play audio"):t('预览原视频',"Preview video");open.onclick=()=>preview({...file,start:data.search_method==='speech'?file.start:0,end:data.search_method==='speech'?file.end:null},open);
+  const reveal=document.createElement('button');reveal.type='button';reveal.textContent=t('在文件夹中定位',"Show in folder");reveal.onclick=async()=>{try{await request('/api/reveal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({file_id:file.file_id})});status(t('已在资源管理器中选中原文件。',"Original file selected in Explorer."))}catch(error){status(error.message,true)}};
   actions.append(open,reveal);
   if(file.kind==='video'&&Number.isFinite(file.peak_time)){
-   const peak=document.createElement('button');peak.type='button';peak.textContent='核对代表画面 · '+clock(file.peak_time);peak.onclick=()=>preview({...file,start:file.peak_time},peak);actions.append(peak);
-   const note=document.createElement('p');note.className='note';note.textContent='缩略图取自得分最高的采样画面，尚未经内容确认。';card.append(note)
+   const peak=document.createElement('button');peak.type='button';peak.textContent=t('核对代表画面 · ',"Check representative frame · ")+clock(file.peak_time);peak.onclick=()=>preview({...file,start:file.peak_time},peak);actions.append(peak);
+   const note=document.createElement('p');note.className='note';note.textContent=t('缩略图取自得分最高的采样画面，尚未经内容确认。',"The thumbnail shows the highest-scoring sampled frame. Preview it to verify the match.");card.append(note)
   }
   card.append(actions);
   if(file.kind==='video'||file.kind==='audio'){
-   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='查看 '+file.segment_count+' 段候选片段'+(file.segment_count>50?'（显示前 50 段）':'');details.append(summary);
+   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=t('查看 ',"Show ")+file.segment_count+t(' 段候选片段'," candidate segments")+(file.segment_count>50?t('（显示前 50 段）'," (first 50 shown)"):'');details.append(summary);
    for(const segment of file.segments){const button=document.createElement('button');button.type='button';button.className='segment';button.textContent=clock(segment.start)+' — '+clock(segment.end)+(segment.text?' · '+segment.text:'');button.onclick=()=>preview({...file,...segment},button);details.append(button)}
    card.append(details)
   }
@@ -92,27 +152,38 @@ function renderFileCards(files,data,container){
 function renderFiles(data){
  const results=$('results');results.replaceChildren();
  const reviewCount=data.review_total_files||0;
- $('count').textContent=data.total_files+(data.search_method==='conditions'?' 个条件候选':' 个文件')+(reviewCount?' · '+reviewCount+' 个待核对':'');
- if(!data.files.length){const message=document.createElement('div');message.className='empty';message.textContent=reviewCount?'没有通过全部条件的候选，可展开下方待核对素材。':'没有找到符合描述的候选素材。';results.append(message)}
+ $('count').textContent=data.total_files+(data.search_method==='conditions'?t(' 个条件候选'," condition matches"):t(' 个文件'," files"))+(reviewCount?' · '+reviewCount+t(' 个待核对'," to review"):'');
+ if(!data.files.length){const message=document.createElement('div');message.className='empty';message.textContent=reviewCount?t('没有通过全部条件的候选，可展开下方待核对素材。',"No results meet every condition. Expand similar media below to review."):t('没有找到符合描述的候选素材。',"No matching media found.");results.append(message)}
  renderFileCards(data.files,data,results);
- if(data.errors?.length){const errors=document.createElement('details'),summary=document.createElement('summary');summary.textContent=data.errors.length+' 个文件处理失败（未计入无匹配）';errors.append(summary);for(const error of data.errors){const line=document.createElement('p');line.textContent=error.name+'：'+error.error;errors.append(line)}results.append(errors)}
- if(data.total_files>data.files.length){const note=document.createElement('p');note.textContent='显示最相关的前 '+data.files.length+' 个文件。';results.append(note)}
+ if(data.errors?.length){const errors=document.createElement('details'),summary=document.createElement('summary');summary.textContent=data.errors.length+t(' 个文件处理失败（未计入无匹配）'," files could not be processed");errors.append(summary);for(const error of data.errors){const line=document.createElement('p');line.textContent=error.name+'：'+error.error;errors.append(line)}results.append(errors)}
+ if(data.total_files>data.files.length){const note=document.createElement('p');note.textContent=t('显示最相关的前 ',"Showing the top ")+data.files.length+t(' 个文件。'," files.");results.append(note)}
  if(reviewCount){
-  const group=document.createElement('details');group.className='review-group';const summary=document.createElement('summary');summary.textContent='待核对的相似素材（'+reviewCount+' 个，条件未全部通过）';group.append(summary);
-  const note=document.createElement('p');note.textContent='这些素材仅在画面上相似，条件未全部通过，不计入上方条件候选；可展开查看，避免遗漏需要的素材。';group.append(note);
+  const group=document.createElement('details');group.className='review-group';const summary=document.createElement('summary');summary.textContent=t('待核对的相似素材（',"Similar media (")+reviewCount+t(' 个，条件未全部通过）'," files need review)");group.append(summary);
+  const note=document.createElement('p');note.textContent=t('这些素材仅在画面上相似，条件未全部通过，不计入上方条件候选；可展开查看，避免遗漏需要的素材。',"These visually similar results did not meet every condition. Expand to check for potential matches.");group.append(note);
   const container=document.createElement('div');container.className='review-files';renderFileCards(data.review_files,data,container);group.append(container);
-  if(reviewCount>data.review_files.length){const limit=document.createElement('p');limit.textContent='待核对区显示前 '+data.review_files.length+' 个文件。';group.append(limit)}
+  if(reviewCount>data.review_files.length){const limit=document.createElement('p');limit.textContent=t('待核对区显示前 ',"Showing the first ")+data.review_files.length+t(' 个文件。'," files.");group.append(limit)}
   results.append(group)
  }
 }
-$('search-target').onchange=()=>{
+function setQueryHint(){
  const target=$('search-target').value;
  const choices={
-  auto:['例如：猫 / 海滩 / 雪地里的狗','输入画面描述即可，系统自动选择人物、物体或场景的查找方式。'],
-  text:['输入截图中的关键词或原句','先扫描图片文件夹，再找图片中的文字；第一次识别后会缓存。'],
-  speech:['输入说过的关键词或原句','先扫描音视频文件夹，再找说过的话；第一次转写后会缓存。']
+  auto:[t('例如：猫 / 海滩 / 雪地里的狗',"Example: cat / beach / dog in the snow"),t('输入画面描述即可，系统自动选择人物、物体或场景的查找方式。',"Describe a person, object, or scene.")],
+  text:[t('输入截图中的关键词或原句',"Enter words from a screenshot"),t('先扫描图片文件夹，再找图片中的文字；第一次识别后会缓存。',"Scan an image folder, then search its text. The first search caches recognized text.")],
+  speech:[t('输入说过的关键词或原句',"Enter words from the recording"),t('先扫描音视频文件夹，再找说过的话；第一次转写后会缓存。',"Scan a media folder, then search spoken words. The first search caches transcripts.")]
  };
- $('query').placeholder=choices[target][0];status(choices[target][1]);lock(busy)
+ $('query').placeholder=choices[target][0];return choices[target][1]
+};
+$('search-target').onchange=()=>{status(setQueryHint());lock(busy)};
+$('language').onchange=()=>{
+ if (busy) return;
+ language=$('language').value;
+ try { localStorage.setItem('media-search-language',language); } catch (error) { /* Optional preference. */ }
+ applyLanguage();
+ photo.alt=t('照片预览','Photo preview');
+ overlay.setAttribute('aria-label',t('命中文字行的位置','Position of the matched line'));
+ setQueryHint();
+ switchMode(mode);
 };
 </script>
 <style>.layout.files-only{grid-template-columns:1fr}.file-card{padding:18px;border:1px solid #3e4c35;border-radius:10px;background:#20291d}.file-card>img{width:140px;height:90px;object-fit:contain;background:#0b100a;border-radius:6px}.file-card h3{font-size:16px;overflow-wrap:anywhere}.file-path{font-size:12px;overflow-wrap:anywhere}.file-actions{display:flex;gap:10px;flex-wrap:wrap}.file-actions button{padding:10px 12px}.file-card details{margin-top:18px}.file-card summary{cursor:pointer;font-size:13px;color:#bdcfae}.segment{display:block;margin-top:10px;background:#33422a;color:#e5efdc;font-weight:400}.review-group{margin-top:18px;padding:16px;border:1px dashed #637253;border-radius:10px}.review-group>summary{cursor:pointer;color:#c3d4b1}.review-files{display:grid;gap:12px;margin-top:12px}</style><style>.photo-wrap{position:relative}#photo{display:block}#ocr-overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#ocr-overlay polygon{fill:rgba(255,213,70,.22);stroke:#ffd546;stroke-width:2;vector-effect:non-scaling-stroke}.ocr-excerpts blockquote{margin:10px 0;padding:8px 12px;border-left:3px solid #d5ef96;white-space:pre-wrap;overflow-wrap:anywhere;color:#e8eee6}</style><style>#task-progress{margin-top:16px;padding:12px;border:1px solid #45523e;border-radius:8px}#task-bar{width:100%;accent-color:#d5ef96}#task-detail{margin:8px 0 0;overflow-wrap:anywhere}</style><style>video.audio-preview{height:80px}</style></html>
